@@ -1,0 +1,175 @@
+@startuml Balance Sheet
+class BalanceSheet {
+    + assets: Cash[]
+    + liabilities: Cash[]
+    + equities: Cash[]
+    + date: Date
+    + exchange_rate: ExchangeRate
+    ---
+    + calculate_net()
+    + describe_charts()
+    + load()
+}
+
+protocol Money {
+    + account: Account
+    + account_title: AccountTitle
+    + currency: Currency
+    + element: Element
+    + is_fixed: bool
+    + value: float
+    ---
+    + {static} sum()
+}
+
+abstract class Cash {
+    + account: Account
+    + account_title: AccountTitle
+    + currency: Currency
+    + element: Element
+    + is_fixed: bool
+    + value: float
+    ---
+    + {static} sum()
+    + convert()
+}
+
+class Cash {
+}
+
+protocol FinancialInstrument {
+    + average_cost: float
+    + name: str
+    + date: Date
+    + price: float
+    + unit: Unit
+    + transaction_lines: Transaction[]
+    + volume: float
+    ---
+    + get_value()
+    + set_average_cost()
+    + calculate_profit()
+   + get_diff_ratio()
+}
+
+class Share {
+    + code: str
+    ---
+    + to_jpy()
+}
+
+class Transaction {
+    + identifier: str
+    + currency: Currency
+    + date: Date
+    + price: float
+    + volume: float
+    ---
+    + to_jpy()
+    + get_cost()
+}
+
+class Metal {
+    + buying_rate: float
+    ---
+    + get_long_term_witholdings()
+    + get_sold_value()
+}
+
+class Insurance {
+    + Type = SavingType
+    ---
+}
+
+class Account {
+    + name: str
+    + owner: enum
+    + account_type: enum
+    + country: enum
+    ---
+}
+
+class ExchangeRate {
+    + currency_of: Currency
+    + currency_to: Currency
+    + date: Date
+    + rate_type: TelegraphicTransfer
+    + exchange_rate: float
+    ---
+    + set_date()
+    + get_value()
+    + update_currencies()
+}
+
+class Accounts {
+    + accounts: Account[]
+    ---
+    + count_accounts()
+    + describe_accounts()
+    + plot_accounts()
+}
+
+enum Element {
+    ASSETS
+    LIABILITIES
+    EQUITY
+}
+
+enum Currency {
+    JPY
+    USD
+    AUD
+    CNY
+}
+
+enum Unit {
+    GRAM
+    STOCK
+    SHARE
+}
+
+enum TelegraphicTransfer {
+    TTS
+    TTM
+    TTB
+}
+
+enum AccountTitle {
+    CASH_EQUIVALENT
+    ACCOUNT_RECEIVABLE
+    INVESTMENT
+    ---
+    ACCOUNT_PAYABLE
+    RESERVE
+    LOAN
+    UTILITY
+    ACCRUED_EXPENSE
+    ---
+    COMMON_STOCK
+    OWNER_DRAW
+    RETAINED_EARNING
+    UNLIALISED_GAIN
+}
+
+
+Cash .> Element
+Cash .> Currency
+Cash d.> AccountTitle
+Cash .left> ExchangeRate
+Money <|.. Cash: implement
+Cash <|--- Metal
+Cash <|--- Share
+Cash <|--- Insurance
+FinancialInstrument <|.. Metal
+FinancialInstrument <|.. Share
+FinancialInstrument <|.. Insurance
+FinancialInstrument .> Unit
+Share "1" --* "1..*" Transaction
+Metal "1" --* "1..*" Transaction
+Account <.. Money: use
+Account <.. Accounts: refine
+
+BalanceSheet ..> Money: use
+ExchangeRate ..> TelegraphicTransfer
+
+@enduml
