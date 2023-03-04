@@ -76,3 +76,6 @@ iOSInjectionProject/
 .DS_Store
 DerivedData/
 .netrc
+
+# Secrets
+AccessTokens.swift
